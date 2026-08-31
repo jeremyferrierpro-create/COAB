@@ -9,6 +9,7 @@
     "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\""
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "vite": "^8.2.2"
   }
 }
