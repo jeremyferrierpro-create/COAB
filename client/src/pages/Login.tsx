@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { HeartHandshake, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 type RoleType = 'SENIOR' | 'JUNIOR' | 'VOLUNTEER';

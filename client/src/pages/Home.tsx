@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { Helmet } from "react-helmet-async"
 import { Button } from "../components/ui/Button"
 import { Card, CardTitle, CardDescription } from "../components/ui/Card"
-import { Home as HomeIcon, User, HeartHandshake, ShieldCheck, FileCheck, Users, ChevronDown, ChevronUp } from "lucide-react"
+import { Home as HomeIcon, User, ShieldCheck, FileCheck, Users, ChevronDown, ChevronUp } from "lucide-react"
 import { cn } from "../lib/utils"
 
 export default function Home() {

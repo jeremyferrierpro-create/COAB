@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { X, CheckCircle, XCircle } from 'lucide-react';
 
 export function ViewUserAdminModal({ isOpen, onClose, userId }: { isOpen: boolean; onClose: () => void; userId: string }) {
