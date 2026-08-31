@@ -364,44 +364,43 @@ export const saveSignature = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
-/ /   A j o u t   Ã     l a   f i n   d u   f i c h i e r   u s e r . c o n t r o l l e r . t s  
-  
- e x p o r t   c o n s t   v a l i d a t e P r o f i l e   =   a s y n c   ( r e q :   R e q u e s t ,   r e s :   R e s p o n s e ,   n e x t :   N e x t F u n c t i o n ) :   P r o m i s e < v o i d >   = >   {  
-     t r y   {  
-         c o n s t   i d   =   r e q . p a r a m s . i d   a s   s t r i n g ;  
-         c o n s t   u s e r R o l e   =   ( r e q   a s   a n y ) . u s e r . r o l e ;  
-  
-         i f   ( u s e r R o l e   ! = =   ' A D M I N ' )   {  
-             r e s . s t a t u s ( 4 0 3 ) . j s o n ( {   e r r o r :   ' A c c Ã ¨ s   r Ã © s e r v Ã ©   a u x   a d m i n i s t r a t e u r s '   } ) ;  
-             r e t u r n ;  
-         }  
-  
-         c o n s t   u s e r   =   a w a i t   p r i s m a . u s e r . f i n d U n i q u e ( {  
-             w h e r e :   {   i d   } ,  
-             i n c l u d e :   {   s e n i o r P r o f i l e :   t r u e ,   j u n i o r P r o f i l e :   t r u e   }  
-         } ) ;  
-  
-         i f   ( ! u s e r )   {  
-             r e s . s t a t u s ( 4 0 4 ) . j s o n ( {   e r r o r :   ' U t i l i s a t e u r   n o n   t r o u v Ã © '   } ) ;  
-             r e t u r n ;  
-         }  
-  
-         / /   M e t t r e   Ã     j o u r   i s P r o f i l e C o m p l e t e  
-         i f   ( u s e r . r o l e   = = =   ' S E N I O R '   & &   u s e r . s e n i o r P r o f i l e )   {  
-             a w a i t   p r i s m a . s e n i o r P r o f i l e . u p d a t e ( {  
-                 w h e r e :   {   u s e r I d :   i d   } ,  
-                 d a t a :   {   i s P r o f i l e C o m p l e t e :   t r u e   }  
-             } ) ;  
-         }   e l s e   i f   ( u s e r . r o l e   = = =   ' J U N I O R '   & &   u s e r . j u n i o r P r o f i l e )   {  
-             a w a i t   p r i s m a . j u n i o r P r o f i l e . u p d a t e ( {  
-                 w h e r e :   {   u s e r I d :   i d   } ,  
-                 d a t a :   {   i s P r o f i l e C o m p l e t e :   t r u e   }  
-             } ) ;  
-         }  
-  
-         r e s . j s o n ( {   s u c c e s s :   t r u e ,   m e s s a g e :   ' D o s s i e r   v a l i d Ã © '   } ) ;  
-     }   c a t c h   ( e r r o r )   {  
-         n e x t ( e r r o r ) ;  
-     }  
- } ;  
- 
+// Ajout ï¿½ï¿½ la fin du fichier user.controller.ts
+
+export const validateProfile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const id = req.params.id as string;
+    const userRole = (req as any).user.role;
+
+    if (userRole !== 'ADMIN') {
+      res.status(403).json({ error: 'Accï¿½ï¿½s rï¿½ï¿½servï¿½ï¿½ aux administrateurs' });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: { seniorProfile: true, juniorProfile: true }
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'Utilisateur non trouvï¿½ï¿½' });
+      return;
+    }
+
+    // Mettre ï¿½ï¿½ jour isProfileComplete
+    if (user.role === 'SENIOR' && user.seniorProfile) {
+      await prisma.seniorProfile.update({
+        where: { userId: id },
+        data: { isProfileComplete: true }
+      });
+    } else if (user.role === 'JUNIOR' && user.juniorProfile) {
+      await prisma.juniorProfile.update({
+        where: { userId: id },
+        data: { isProfileComplete: true }
+      });
+    }
+
+    res.json({ success: true, message: 'Dossier validï¿½ï¿½' });
+  } catch (error) {
+    next(error);
+  }
+};

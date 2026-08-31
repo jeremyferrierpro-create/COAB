@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveSignature = exports.updateUserAdmin = exports.createUserAdmin = exports.updateOnboarding = exports.deleteUser = exports.updateUser = exports.getUserById = exports.getAllUsers = exports.updateMe = exports.getMe = void 0;
+exports.validateProfile = exports.saveSignature = exports.updateUserAdmin = exports.createUserAdmin = exports.updateOnboarding = exports.deleteUser = exports.updateUser = exports.getUserById = exports.getAllUsers = exports.updateMe = exports.getMe = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const getMe = async (req, res, next) => {
@@ -87,7 +87,10 @@ const getUserById = async (req, res, next) => {
             include: {
                 seniorProfile: true,
                 juniorProfile: true,
-                hthProfile: true
+                hthProfile: true,
+                documents: {
+                    select: { id: true, docType: true, fileUrl: true, signedAt: true }
+                }
             }
         });
         if (!user) {
@@ -167,6 +170,14 @@ exports.updateOnboarding = updateOnboarding;
 const createUserAdmin = async (req, res, next) => {
     try {
         const { firstName, lastName, email, phone, role, gender, birthDate, address, city, zipCode, housingType, roomSurface, hasPets, accessibilityLevel, situation, maxBudget, moveInDate, discoverySource, mutualInsurance, motivations, freeComments } = req.body;
+        // Check if email is already taken
+        if (email) {
+            const existingUser = await prisma_1.default.user.findUnique({ where: { email } });
+            if (existingUser) {
+                res.status(400).json({ message: 'Cet email est déjà utilisé par un autre compte.' });
+                return;
+            }
+        }
         const finalEmail = email || `user_${Date.now()}@noemail.coab.fr`;
         const tempPassword = Math.random().toString(36).slice(-8);
         const passwordHash = await bcryptjs_1.default.hash(tempPassword, 10);
@@ -335,4 +346,41 @@ const saveSignature = async (req, res, next) => {
     }
 };
 exports.saveSignature = saveSignature;
+// Ajout �� la fin du fichier user.controller.ts
+const validateProfile = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const userRole = req.user.role;
+        if (userRole !== 'ADMIN') {
+            res.status(403).json({ error: 'Acc��s r��serv�� aux administrateurs' });
+            return;
+        }
+        const user = await prisma_1.default.user.findUnique({
+            where: { id },
+            include: { seniorProfile: true, juniorProfile: true }
+        });
+        if (!user) {
+            res.status(404).json({ error: 'Utilisateur non trouv��' });
+            return;
+        }
+        // Mettre �� jour isProfileComplete
+        if (user.role === 'SENIOR' && user.seniorProfile) {
+            await prisma_1.default.seniorProfile.update({
+                where: { userId: id },
+                data: { isProfileComplete: true }
+            });
+        }
+        else if (user.role === 'JUNIOR' && user.juniorProfile) {
+            await prisma_1.default.juniorProfile.update({
+                where: { userId: id },
+                data: { isProfileComplete: true }
+            });
+        }
+        res.json({ success: true, message: 'Dossier valid��' });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.validateProfile = validateProfile;
 //# sourceMappingURL=user.controller.js.map

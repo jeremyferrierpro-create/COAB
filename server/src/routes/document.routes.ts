@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { uploadDocument, downloadDocument, getUserDocuments } from '../controllers/document.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // Routes protégées par authentification
-router.use(authenticate);
+router.use(authenticateToken);
 
 // Uploader un nouveau document
 router.post('/upload', uploadDocument);

@@ -44,14 +44,14 @@ export const uploadDocument = async (req: Request, res: Response, next: NextFunc
 
 export const downloadDocument = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const userRole = (req as any).user.role;
     const userId = (req as any).user.id;
 
     const document = await prisma.document.findUnique({
       where: { id },
       include: { match: true }
-    });
+    }) as any;
 
     if (!document) {
       res.status(404).json({ error: 'Document non trouvé' });
@@ -75,22 +75,24 @@ export const downloadDocument = async (req: Request, res: Response, next: NextFu
 
     // Le fileData est censé être en Base64 (ex: data:application/pdf;base64,JVBERi0xLjQK...)
     // Extraire le mime-type et les données
-    const matches = document.fileData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    const fileDataStr = document.fileData as string;
+    const matches = fileDataStr.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
       res.status(400).json({ error: 'Format de fichier invalide' });
       return;
     }
 
     const mimeType = matches[1];
-    const buffer = Buffer.from(matches[2], 'base64');
+    const buffer = Buffer.from(matches[2] || '', 'base64');
 
     // Définir les headers
+    const mimeTypeStr = mimeType || 'application/octet-stream';
     let extension = 'bin';
-    if (mimeType.includes('pdf')) extension = 'pdf';
-    else if (mimeType.includes('png')) extension = 'png';
-    else if (mimeType.includes('jpeg')) extension = 'jpg';
+    if (mimeTypeStr.includes('pdf')) extension = 'pdf';
+    else if (mimeTypeStr.includes('png')) extension = 'png';
+    else if (mimeTypeStr.includes('jpeg')) extension = 'jpg';
 
-    res.setHeader('Content-Type', mimeType);
+    res.setHeader('Content-Type', mimeTypeStr);
     res.setHeader('Content-Disposition', `attachment; filename="document_${id}.${extension}"`);
     res.send(buffer);
   } catch (error) {

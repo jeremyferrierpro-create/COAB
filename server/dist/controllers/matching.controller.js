@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMatch = exports.getMatchesForJunior = exports.getMatchesForSenior = void 0;
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const client_1 = require("@prisma/client");
+const email_service_1 = require("../lib/email.service");
 const getMatchesForSenior = async (req, res) => {
     try {
         const seniorId = req.params.seniorId;
@@ -159,8 +160,8 @@ const createMatch = async (req, res) => {
             res.status(400).json({ error: 'Données manquantes' });
             return;
         }
-        const senior = await prisma_1.default.seniorProfile.findUnique({ where: { id: seniorId } });
-        const junior = await prisma_1.default.juniorProfile.findUnique({ where: { id: juniorId } });
+        const senior = await prisma_1.default.seniorProfile.findUnique({ where: { id: seniorId }, include: { user: true } });
+        const junior = await prisma_1.default.juniorProfile.findUnique({ where: { id: juniorId }, include: { user: true } });
         if (!senior || !junior) {
             res.status(404).json({ error: 'Profil Sénior ou Junior introuvable' });
             return;
@@ -174,6 +175,33 @@ const createMatch = async (req, res) => {
                 status: client_1.MatchStatus.SUGGESTED
             }
         });
+        // Envoi d'email de notification aux deux parties
+        if (senior.user?.email) {
+            await email_service_1.emailService.sendEmail({
+                to: senior.user.email,
+                subject: 'Nouveau profil proposé pour votre hébergement ! 🎉',
+                html: `
+          <h2>Bonjour ${senior.user.firstName},</h2>
+          <p>Nous avons trouvé un profil Junior qui correspond très bien à vos attentes (Score d'affinité: ${score}%).</p>
+          <p>Connectez-vous sur votre espace COAB pour découvrir son profil et organiser une première rencontre !</p>
+          <br>
+          <p>L'équipe COAB</p>
+        `
+            });
+        }
+        if (junior.user?.email) {
+            await email_service_1.emailService.sendEmail({
+                to: junior.user.email,
+                subject: 'Une proposition d\'hébergement vous attend ! 🎉',
+                html: `
+          <h2>Bonjour ${junior.user.firstName},</h2>
+          <p>Un hébergeur correspondant à vos critères a été trouvé ! (Score d'affinité: ${score}%).</p>
+          <p>Connectez-vous sur votre espace COAB pour en savoir plus.</p>
+          <br>
+          <p>L'équipe COAB</p>
+        `
+            });
+        }
         res.status(201).json(newMatch);
     }
     catch (error) {

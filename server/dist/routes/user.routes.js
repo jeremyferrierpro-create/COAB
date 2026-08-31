@@ -17,5 +17,7 @@ router.put('/:id', auth_middleware_1.authenticateToken, (0, auth_middleware_1.re
 router.delete('/:id', auth_middleware_1.authenticateToken, user_controller_1.deleteUser);
 // Onboarding utilisateur
 router.post('/:id/onboarding', auth_middleware_1.authenticateToken, user_controller_1.updateOnboarding);
+// Valider le dossier d'un utilisateur (Admin)
+router.post('/:id/validate', auth_middleware_1.authenticateToken, (0, auth_middleware_1.requireRole)(['ADMIN']), user_controller_1.validateProfile);
 exports.default = router;
 //# sourceMappingURL=user.routes.js.map

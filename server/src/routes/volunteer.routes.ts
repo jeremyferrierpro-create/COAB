@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { getVolunteerReports, createVolunteerReport } from '../controllers/volunteer.controller';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
 // Routes protégées par l'authentification
-router.use(authenticate);
+router.use(authenticateToken);
 
 // Récupérer les rapports (filtrés par le bénévole, ou tous pour l'admin)
 router.get('/reports', getVolunteerReports);

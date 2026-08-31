@@ -35,7 +35,7 @@ export const createCheckoutSession = async (req: Request, res: Response, next: N
 
 export const mockWebhook = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     
     // Simuler le traitement du webhook (succès du paiement)
     await prisma.financialTransaction.update({
