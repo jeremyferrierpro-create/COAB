@@ -173,6 +173,15 @@ export const createUserAdmin = async (req: Request, res: Response, next: NextFun
       discoverySource, mutualInsurance, motivations, freeComments
     } = req.body;
 
+    // Check if email is already taken
+    if (email) {
+      const existingUser = await prisma.user.findUnique({ where: { email } });
+      if (existingUser) {
+        res.status(400).json({ message: 'Cet email est déjà utilisé par un autre compte.' });
+        return;
+      }
+    }
+
     const finalEmail = email || `user_${Date.now()}@noemail.coab.fr`;
     const tempPassword = Math.random().toString(36).slice(-8);
     const passwordHash = await bcrypt.hash(tempPassword, 10);
