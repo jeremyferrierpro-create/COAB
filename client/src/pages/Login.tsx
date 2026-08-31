@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '../components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { HeartHandshake, Info } from 'lucide-react';
@@ -34,30 +35,29 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // MOCK LOGIN TEMPORAIRE (Smart Auth)
-    if (password === 'password123') {
-      const mockUser = {
-        id: '123',
-        email: email,
-        firstName: 'Utilisateur',
-        lastName: 'Test',
-        role: 'JUNIOR' as any
-      };
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-      if (email.includes('admin')) mockUser.role = 'ADMIN';
-      if (email.includes('senior')) mockUser.role = 'SENIOR';
-      if (email.includes('volunteer')) mockUser.role = 'VOLUNTEER';
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Erreur de connexion');
+      }
 
-      login('dummy-token', mockUser);
+      const data = await res.json();
+      login(data.token, data.user);
       
-      switch (mockUser.role) {
+      switch (data.user.role) {
         case 'ADMIN': navigate('/admin'); break;
         case 'SENIOR': navigate('/senior'); break;
         case 'VOLUNTEER': navigate('/volunteer'); break;
         case 'JUNIOR': navigate('/junior'); break;
       }
-    } else {
-      setError('Identifiants incorrects (Indice: essayez admin@coab.fr / password123)');
+    } catch (err: any) {
+      setError(err.message || 'Erreur de connexion. Vérifiez vos identifiants.');
     }
   };
 
@@ -65,37 +65,44 @@ export default function Login() {
     e.preventDefault();
     setError('');
 
-    // Simulation de l'enregistrement en base de données et connexion automatique
-    const mockUser = {
-      id: '999',
-      email: email,
-      firstName: firstName,
-      lastName: lastName,
-      role: role
-    };
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, role, firstName, lastName })
+      });
 
-    login('dummy-token-registered', mockUser);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Erreur d\'inscription');
+      }
 
-    // Routage intelligent basé sur le rôle choisi
-    switch (role) {
-      case 'SENIOR': navigate('/senior'); break;
-      case 'VOLUNTEER': navigate('/volunteer'); break;
-      case 'JUNIOR': navigate('/junior'); break;
+      const data = await res.json();
+      login(data.token, data.user);
+
+      // Profil incomplet => Onboarding
+      navigate('/onboarding');
+    } catch (err: any) {
+      setError(err.message || 'Erreur lors de l\'enregistrement.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-coab-cream flex items-center justify-center p-4 overflow-y-auto relative">
+    <>
+      <Helmet>
+        <title>{isLoginView ? 'Connexion' : 'Inscription'} - COAB</title>
+      </Helmet>
+      <div className="min-h-screen bg-coab-cream flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Background decoration */}
       <div className="fixed inset-0 bg-[url('/images/senior2.webp')] bg-cover bg-center opacity-10 filter blur-sm"></div>
 
       <Card className={cn(
-        "w-full bg-white/80 backdrop-blur-xl shadow-2xl border-white/40 relative z-10 transition-all duration-500",
+        "w-full mx-auto bg-white/80 backdrop-blur-xl shadow-2xl border-white/40 relative z-10 transition-all duration-500",
         isLoginView ? "max-w-md my-auto" : "max-w-2xl my-8"
       )}>
         <CardHeader className="space-y-1 text-center">
-          <div className="w-16 h-16 bg-coab-blue/10 text-coab-blue rounded-full flex items-center justify-center mx-auto mb-4">
-            <HeartHandshake size={32} />
+          <div className="mx-auto mb-4 flex justify-center">
+            <img src="/logo.jpg" alt="COAB Logo" className="w-24 h-24 object-cover rounded-full shadow-md border-4 border-white" />
           </div>
           <CardTitle className="text-2xl font-extrabold text-coab-black font-serif tracking-tight">
             Espace COAB
@@ -147,6 +154,7 @@ export default function Login() {
                   placeholder="nom@exemple.fr"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="username"
                   required
                   className="bg-white/50"
                 />
@@ -158,6 +166,7 @@ export default function Login() {
                   placeholder="Votre mot de passe"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
                   required
                   className="bg-white/50"
                 />
@@ -220,9 +229,16 @@ export default function Login() {
                 <h3 className="text-sm font-bold text-coab-black uppercase tracking-wider border-b pb-2">Contact & Sécurité</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input type="tel" placeholder="N° de Téléphone" value={phone} onChange={e => setPhone(e.target.value)} required />
-                  <Input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+                  <Input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" required />
                 </div>
-                <Input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} required minLength={8} />
+                <Input type="password" placeholder="Mot de passe" value={password} onChange={e => setPassword(e.target.value)} autoComplete="new-password" required minLength={8} />
+              </div>
+
+              <div className="flex items-start space-x-3 bg-coab-blue/5 p-4 rounded-lg border border-coab-blue/20">
+                <input type="checkbox" id="rgpd-consent" required className="mt-1 w-5 h-5 accent-coab-blue" />
+                <label htmlFor="rgpd-consent" className="text-sm text-coab-gray leading-relaxed">
+                  J'accepte que mes données personnelles soient traitées dans le cadre de ma recherche de cohabitation, conformément à la <a href="#" className="text-coab-blue underline">Politique de Confidentialité</a>. (Conformité RGPD)
+                </label>
               </div>
 
               <Button type="submit" className="w-full bg-coab-blue hover:bg-coab-blue-dark text-white font-bold py-6 text-lg">
@@ -232,6 +248,7 @@ export default function Login() {
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }

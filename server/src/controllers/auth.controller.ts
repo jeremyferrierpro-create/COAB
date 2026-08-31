@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-coab-123';
 
-export const login = async (req: Request, res: Response): Promise<void> => {
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { email, password } = req.body;
 
@@ -52,13 +52,173 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       }
     });
   } catch (error) {
-    console.error('Erreur lors du login:', error);
-    res.status(500).json({ error: 'Erreur interne du serveur.' });
+    next(error);
   }
 };
 
-// Fonction utilitaire pour le développement : Créer des utilisateurs de test
-export const seedDevUsers = async (req: Request, res: Response): Promise<void> => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { email, password, role, firstName, lastName } = req.body;
+
+    if (!email || !password || !role) {
+      res.status(400).json({ error: 'Champs obligatoires manquants.' });
+      return;
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role,
+        firstName,
+        lastName,
+        isVerified: false
+      }
+    });
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      message: 'Inscription réussie',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const registerSenior = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { 
+      email, password, firstName, lastName, phone, birthDate, birthPlace, nationality, address, zipCode, city,
+      housingType, roomSurface, hasPets, accessibilityLevel, expectedPresence, preferredProfile, acceptCharte, sleepHabit, presencePattern
+    } = req.body;
+
+    if (!email || !password || !firstName || !lastName) {
+      res.status(400).json({ error: 'Champs de base manquants.' });
+      return;
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: 'SENIOR',
+        firstName,
+        lastName,
+        phone,
+        birthDate: birthDate ? new Date(birthDate) : null,
+        birthPlace,
+        nationality,
+        address,
+        zipCode,
+        city,
+        isVerified: false,
+        seniorProfile: {
+          create: {
+            housingType: housingType || 'Appartement',
+            roomSurface: Number(roomSurface) || 9,
+            hasPets: Boolean(hasPets),
+            accessibilityLevel: accessibilityLevel || 'Plain-pied',
+            sleepHabit: sleepHabit || 'VARIABLE',
+            presencePattern: presencePattern || 'MEDIUM',
+            isProfileComplete: true
+          }
+        }
+      }
+    });
+
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ message: 'Inscription Sénior réussie', token, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const registerJunior = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { 
+      email, password, firstName, lastName, phone, birthDate, birthPlace, nationality, address, zipCode, city,
+      situation, targetCities, maxBudget, moveInDate, hobbies, sleepHabit, acceptCharte
+    } = req.body;
+
+    if (!email || !password || !firstName || !lastName) {
+      res.status(400).json({ error: 'Champs de base manquants.' });
+      return;
+    }
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      res.status(400).json({ error: 'Cet email est déjà utilisé.' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: 'JUNIOR',
+        firstName,
+        lastName,
+        phone,
+        birthDate: birthDate ? new Date(birthDate) : null,
+        birthPlace,
+        nationality,
+        address,
+        zipCode,
+        city,
+        isVerified: false,
+        juniorProfile: {
+          create: {
+            situation: situation || 'Etudiant',
+            targetCities: targetCities || [],
+            maxBudget: Number(maxBudget) || 0,
+            moveInDate: moveInDate ? new Date(moveInDate) : new Date(),
+            hobbies: hobbies || [],
+            sleepHabit: sleepHabit || 'VARIABLE',
+            isProfileComplete: true
+          }
+        }
+      }
+    });
+
+    const token = jwt.sign({ id: user.id, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+    res.json({ message: 'Inscription Junior réussie', token, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const seedDevUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const passwordHash = await bcrypt.hash('password123', 10);
     
@@ -106,7 +266,6 @@ export const seedDevUsers = async (req: Request, res: Response): Promise<void> =
 
     res.json({ message: 'Utilisateurs de test générés (admin@coab.fr, senior@coab.fr, junior@coab.fr / password123)' });
   } catch (error) {
-    console.error('Erreur seed users:', error);
-    res.status(500).json({ error: 'Erreur interne' });
+    next(error);
   }
 };

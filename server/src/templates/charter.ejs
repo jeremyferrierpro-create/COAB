@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Charte Cohabilis</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #000;
+      margin: 0;
+      padding: 40px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #e67e22;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      font-style: italic;
+      margin-bottom: 30px;
+      color: #555;
+    }
+    h2 {
+      font-size: 15px;
+      color: #e67e22;
+      border-bottom: 1px solid #e67e22;
+      padding-bottom: 3px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    p {
+      text-align: justify;
+      margin-bottom: 10px;
+    }
+    ul {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 5px;
+      text-align: justify;
+    }
+    .highlight {
+      font-weight: bold;
+    }
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+      page-break-inside: avoid;
+    }
+    .signature-box {
+      width: 45%;
+      text-align: left;
+    }
+    .signature-img {
+      max-width: 100%;
+      max-height: 80px;
+      margin-top: 10px;
+    }
+    .footer {
+      font-size: 10px;
+      color: #888;
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CHARTE DE LA COHABITATION INTERGÉNÉRATIONNELLE</h1>
+  <div class="subtitle">Adossée au Réseau Cohabilis</div>
+
+  <p>La présente charte définit les valeurs éthiques et les grands principes de fonctionnement de la cohabitation intergénérationnelle et solidaire, telle que mise en œuvre par l'association <strong>COAB</strong> pour le binôme :</p>
+  <ul>
+    <li>Sénior : <strong><%= seniorName %></strong></li>
+    <li>Junior : <strong><%= juniorName %></strong></li>
+  </ul>
+
+  <h2>1. Préambule et Valeurs</h2>
+  <p>La cohabitation intergénérationnelle solidaire repose sur l'entraide, le respect mutuel, la convivialité et la solidarité entre les générations. Elle permet à une personne âgée de rompre son isolement et à un jeune d'accéder à un logement abordable, dans un cadre sécurisant et bienveillant.</p>
+
+  <h2>2. Engagement du Sénior (L'Accueillant)</h2>
+  <ul>
+    <li>Accueillir le jeune dans un esprit de tolérance et de partage.</li>
+    <li>Mettre à disposition une chambre meublée, décente et respectant les normes de sécurité.</li>
+    <li>Garantir au jeune l'accès aux parties communes nécessaires (cuisine, sanitaires).</li>
+    <li>Respecter la vie privée et l'intimité du jeune.</li>
+  </ul>
+
+  <h2>3. Engagement du Junior (L'Hébergé)</h2>
+  <ul>
+    <li>Assurer une présence bienveillante et rassurante aux moments convenus.</li>
+    <li>Respecter le rythme de vie, le repos et les habitudes du sénior.</li>
+    <li>Participer à la vie quotidienne de manière harmonieuse, sans se substituer à un professionnel de santé ou d'aide à domicile.</li>
+    <li>Verser ponctuellement la participation financière convenue (le cas échéant).</li>
+  </ul>
+
+  <h2>4. Rôle de l'Association COAB</h2>
+  <p>En tant que structure tierce, COAB s'engage à :</p>
+  <ul>
+    <li>Sélectionner les profils et constituer les binômes selon les affinités et les attentes de chacun.</li>
+    <li>Accompagner le binôme dans la rédaction et la signature du contrat (Loi ELAN).</li>
+    <li>Assurer un suivi régulier de la cohabitation et intervenir en tant que médiateur en cas de difficultés ou d'incompréhension.</li>
+  </ul>
+
+  <p>En signant cette charte, les parties reconnaissent avoir pris connaissance de ces principes et s'engagent à les respecter tout au long de la cohabitation.</p>
+
+  <div class="signatures">
+    <div class="signature-box">
+      <strong>Le/La Sénior</strong><br>
+      <em>Lu et approuvé</em><br>
+      <% if (seniorSignature) { %>
+        <img src="<%= seniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+    <div class="signature-box">
+      <strong>Le/La Jeune</strong><br>
+      <em>Lu et approuvé</em><br>
+      <% if (juniorSignature) { %>
+        <img src="<%= juniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+  </div>
+
+  <div class="footer">
+    Dossier N° <%= matchId %> - Édité le <%= date %> par COAB
+  </div>
+
+</body>
+</html>

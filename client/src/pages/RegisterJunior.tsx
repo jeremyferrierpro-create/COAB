@@ -1,4 +1,3 @@
-import * as React from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { juniorFormSchema, type JuniorFormValues } from "../lib/validations"
@@ -8,22 +7,38 @@ import { Select } from "../components/ui/Select"
 import { Checkbox } from "../components/ui/Checkbox"
 import { Button } from "../components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../components/ui/Card"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
+import toast from "react-hot-toast"
 
 export default function RegisterJunior() {
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<JuniorFormValues>({
-    resolver: zodResolver(juniorFormSchema),
+    resolver: zodResolver(juniorFormSchema) as any,
   })
 
   const onSubmit = async (data: JuniorFormValues) => {
-    // TODO: Send to API
-    console.log("Junior Registration Data:", data)
-    alert("Candidature envoyée avec succès !")
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/register-junior', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      const resData = await res.json();
+      if (res.ok) {
+        toast.success("Candidature envoyée avec succès ! Vous pouvez maintenant vous connecter.");
+        navigate('/login');
+      } else {
+        toast.error(resData.error || "Une erreur est survenue lors de l'inscription.");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Une erreur est survenue.");
+    }
   }
 
   return (
@@ -59,14 +74,6 @@ export default function RegisterJunior() {
                   <div className="space-y-2">
                     <Label htmlFor="birthDate">Date de naissance</Label>
                     <Input id="birthDate" type="date" {...register("birthDate")} error={errors.birthDate?.message} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="birthPlace">Lieu de naissance</Label>
-                    <Input id="birthPlace" {...register("birthPlace")} error={errors.birthPlace?.message} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nationality">Nationalité</Label>
-                    <Input id="nationality" {...register("nationality")} error={errors.nationality?.message} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">Téléphone</Label>
@@ -144,8 +151,8 @@ export default function RegisterJunior() {
                 <div className="flex items-start space-x-3">
                   <Checkbox id="acceptCharte" {...register("acceptCharte")} error={errors.acceptCharte?.message} className="mt-1" />
                   <div className="space-y-1 leading-none">
-                    <Label htmlFor="acceptCharte">J'accepte la charte Cohabilis et le traitement de mes données (RGPD)</Label>
-                    <p className="text-sm text-coab-gray">Vos données sont sécurisées et ne seront utilisées que dans le cadre de la recherche d'un logement.</p>
+                    <Label htmlFor="acceptCharte">J'accepte la Politique de Confidentialité et le traitement de mes données de profilage (Habitudes de vie) à des fins de matching (RGPD).</Label>
+                    <p className="text-sm text-coab-gray">Vos données de profilage sont sécurisées et strictement limitées à la recherche d'une personne compatible.</p>
                   </div>
                 </div>
               </div>

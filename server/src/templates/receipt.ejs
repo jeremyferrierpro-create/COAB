@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quittance de Loyer</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      line-height: 1.6;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 50px;
+      border-bottom: 2px solid #0056b3;
+      padding-bottom: 20px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0056b3;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .slogan {
+      font-size: 11px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .doc-info {
+      text-align: right;
+    }
+    .doc-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .ref {
+      font-size: 12px;
+      color: #555;
+    }
+    .addresses {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 50px;
+    }
+    .address-block {
+      width: 45%;
+    }
+    .address-title {
+      font-weight: bold;
+      color: #555;
+      text-transform: uppercase;
+      font-size: 12px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th {
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: left;
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 2px solid #ddd;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .text-right {
+      text-align: right;
+    }
+    .total-row {
+      background-color: #f1f8ff;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .total-row td {
+      border-top: 2px solid #0056b3;
+      border-bottom: none;
+    }
+    .legal {
+      margin-top: 50px;
+      font-size: 11px;
+      color: #777;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      text-align: justify;
+    }
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+    .signature-box {
+      width: 45%;
+      border: 1px dashed #ccc;
+      padding: 10px;
+      min-height: 100px;
+      text-align: center;
+    }
+    .signature-img {
+      max-width: 100%;
+      max-height: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <h1 class="logo">COAB</h1>
+      <div class="slogan">Inclusion - Hébergement - Solidarité</div>
+    </div>
+    <div class="doc-info">
+      <div class="doc-title">QUITTANCE DE LOYER</div>
+      <div class="ref">Dossier N° : <%= matchId %></div>
+      <div class="ref">Date d'émission : <%= date %></div>
+      <div class="ref">Période : <%= period %></div>
+    </div>
+  </div>
+
+  <div class="addresses">
+    <div class="address-block">
+      <div class="address-title">Émetteur (Le Bailleur / Sénior)</div>
+      <strong><%= seniorName %></strong><br>
+    </div>
+    <div class="address-block">
+      <div class="address-title">Destinataire (Le Locataire / Junior)</div>
+      <strong><%= juniorName %></strong><br>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Désignation</th>
+        <th class="text-right">Montant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Loyer de base / Indemnité d'occupation</td>
+        <td class="text-right"><%= rentAmount.toFixed(2) %> €</td>
+      </tr>
+      <tr>
+        <td>Charges forfaitaires (Eau, Électricité, etc.)</td>
+        <td class="text-right"><%= chargesAmount.toFixed(2) %> €</td>
+      </tr>
+      <% if (paidServices && paidServices.length > 0) { %>
+      <tr>
+        <td>Services inclus : <%= paidServices.join(', ') %></td>
+        <td class="text-right">Inclus</td>
+      </tr>
+      <% } %>
+      <tr class="total-row">
+        <td>TOTAL RÉGLÉ</td>
+        <td class="text-right"><%= totalAmount.toFixed(2) %> €</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 40px;">
+    <p>Je soussigné(e) <strong><%= seniorName %></strong>, propriétaire du logement désigné ci-dessus, déclare avoir reçu de <strong><%= juniorName %></strong> la somme de <strong><%= totalAmount.toFixed(2) %> €</strong> au titre du paiement du loyer et des charges pour la période de <strong><%= period %></strong>, et lui en donne quittance, sous réserve de tous mes droits.</p>
+  </div>
+  
+  <div class="signatures">
+    <div class="signature-box">
+      <strong>Signature Sénior (Bailleur)</strong><br>
+      <% if (seniorSignature) { %>
+        <img src="<%= seniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+    <div class="signature-box">
+      <strong>Signature Junior (Locataire)</strong><br>
+      <% if (juniorSignature) { %>
+        <img src="<%= juniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+  </div>
+
+  <div class="legal">
+    Cette quittance annule tous les reçus qui auraient pu être donnés pour acompte versé sur le présent terme.
+    Le paiement de la présente quittance n'emporte pas renonciation du loueur aux loyers, charges ou indemnités antérieurs non réglés.
+    En cas de paiement par chèque, la présente quittance est délivrée sous réserve d'encaissement.
+    Document généré automatiquement par la plateforme COAB.
+  </div>
+
+</body>
+</html>

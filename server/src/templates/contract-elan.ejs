@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contrat ELAN</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #000;
+      margin: 0;
+      padding: 40px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 5px;
+      color: #0056b3;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      font-style: italic;
+      margin-bottom: 30px;
+      color: #555;
+    }
+    h2 {
+      font-size: 15px;
+      color: #0056b3;
+      border-bottom: 1px solid #0056b3;
+      padding-bottom: 3px;
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+    p {
+      text-align: justify;
+      margin-bottom: 10px;
+    }
+    ul {
+      margin-top: 5px;
+      margin-bottom: 10px;
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 5px;
+      text-align: justify;
+    }
+    .highlight {
+      font-weight: bold;
+    }
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 50px;
+      page-break-inside: avoid;
+    }
+    .signature-box {
+      width: 45%;
+      text-align: left;
+    }
+    .signature-img {
+      max-width: 100%;
+      max-height: 80px;
+      margin-top: 10px;
+    }
+    .footer {
+      font-size: 10px;
+      color: #888;
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid #eee;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CONTRAT DE COHABITATION INTERGÉNÉRATIONNELLE SOLIDAIRE</h1>
+  <div class="subtitle">Habitat temporaire chez l'habitant (Loi ELAN - Modèle N°5)</div>
+
+  <p>Créé par l'article 117 de la loi n° 2018-1021 du 23 novembre 2018 (loi ELAN). Régi par les articles L. 631-17 à L. 631-19 du Code de la construction et de l'habitation (CCH).</p>
+
+  <h2>Article 1 — Désignation des parties</h2>
+  <p><span class="highlight">LA PERSONNE ÂGÉE (« le/la SENIOR »)</span>, âgé(e) de 60 ans ou plus :</p>
+  <ul>
+    <li>Nom / prénom : <strong><%= seniorName %></strong></li>
+  </ul>
+  
+  <p><span class="highlight">LE / LA JEUNE (« le/la JEUNE »)</span>, âgé(e) de moins de 30 ans :</p>
+  <ul>
+    <li>Nom / prénom : <strong><%= juniorName %></strong></li>
+  </ul>
+
+  <h2>Article 2 — Structure tierce accompagnatrice</h2>
+  <p>La mise en relation et le suivi de la présente cohabitation sont assurés par : <strong>COAB</strong>, association régie par la loi du 1er juillet 1901, adhérente à la charte nationale de la cohabitation intergénérationnelle solidaire, qui s'assure du bon état d'usage du logement, informe et accompagne les deux parties et intervient en cas de médiation nécessaire.</p>
+
+  <h2>Article 3 — Objet et désignation des locaux mis à disposition</h2>
+  <p>Le logement est en bon état d'usage et de réparation, ne présente aucun risque manifeste pour la sécurité physique ou la santé et offre les conditions d'hygiène et de confort requises pour l'habitation.</p>
+  <ul>
+    <li>Formule d'hébergement : <strong><%= formula %></strong></li>
+  </ul>
+
+  <h2>Article 4 — Durée et résiliation</h2>
+  <p>Le contrat prend effet le <strong><%= date %></strong>, renouvelable par accord exprès des deux parties.</p>
+  <p>Chaque partie peut résilier le contrat à tout moment moyennant un préavis d'un mois, notifié par écrit à l'autre partie et à la structure accompagnatrice.</p>
+
+  <h2>Article 5 — Contrepartie financière modeste</h2>
+  <p>Le JEUNE verse au SENIOR une contrepartie financière modeste de <strong><%= rentAmount.toFixed(2) %> €</strong> par mois, payable par virement. Ce montant reste dans des limites raisonnables au regard des recommandations administratives.</p>
+  <p>Les charges complémentaires convenues s'élèvent à <strong><%= chargesAmount.toFixed(2) %> €</strong>.</p>
+  <p>Services inclus : <strong><%= (paidServices && paidServices.length > 0) ? paidServices.join(', ') : 'Aucun' %></strong>.</p>
+
+  <h2>Article 6 — Menus services et présence bienveillante</h2>
+  <p>Le JEUNE peut, en complément et sans contrepartie financière ni obligation contraignante, réaliser des « menus services » au bénéfice du SENIOR, définis d'un commun accord.</p>
+  <p>Ces menus services doivent rester ponctuels et bienveillants, sans lien de subordination, sans horaires imposés ni pouvoir de direction ou de sanction du SENIOR sur le JEUNE, et ne doivent pas se substituer à une prestation d'aide à domicile normalement assurée par un professionnel ou un salarié.</p>
+
+  <h2>Article 7 — Obligations réciproques</h2>
+  <ul>
+    <li><strong>Le SENIOR s'engage à</strong> : maintenir le logement en bon état d'usage ; respecter la vie privée et l'intimité du JEUNE ; l'informer du fonctionnement du logement.</li>
+    <li><strong>Le JEUNE s'engage à</strong> : respecter le logement, la vie privée et le mode de vie du SENIOR ; user paisiblement des lieux ; souscrire une assurance responsabilité civile couvrant son occupation.</li>
+  </ul>
+
+  <h2>Article 8 — Régime fiscal et requalification</h2>
+  <p>La contrepartie perçue par le senior constitue un revenu imposable. Les parties conviennent expressément que le présent contrat ne relève pas de la loi du 6 juillet 1989 relative aux baux d'habitation, ne constitue pas une colocation et n'emporte aucune requalification en contrat de travail.</p>
+
+  <div class="signatures">
+    <div class="signature-box">
+      <strong>Le/La Sénior</strong><br>
+      <em>Lu et approuvé</em><br>
+      <% if (seniorSignature) { %>
+        <img src="<%= seniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+    <div class="signature-box">
+      <strong>Le/La Jeune</strong><br>
+      <em>Lu et approuvé</em><br>
+      <% if (juniorSignature) { %>
+        <img src="<%= juniorSignature %>" class="signature-img" />
+      <% } %>
+    </div>
+  </div>
+
+  <div class="footer">
+    Dossier N° <%= matchId %> - Document généré par COAB le <%= date %>
+  </div>
+
+</body>
+</html>

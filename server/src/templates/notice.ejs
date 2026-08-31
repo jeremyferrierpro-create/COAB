@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Avis de Paiement</title>
+  <style>
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+      line-height: 1.6;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 50px;
+      border-bottom: 2px solid #0056b3;
+      padding-bottom: 20px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0056b3;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+    .slogan {
+      font-size: 11px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .doc-info {
+      text-align: right;
+    }
+    .doc-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .ref {
+      font-size: 12px;
+      color: #555;
+    }
+    .addresses {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 50px;
+    }
+    .address-block {
+      width: 45%;
+    }
+    .address-title {
+      font-weight: bold;
+      color: #555;
+      text-transform: uppercase;
+      font-size: 12px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    th {
+      background-color: #f8f9fa;
+      color: #333;
+      text-align: left;
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 2px solid #ddd;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .text-right {
+      text-align: right;
+    }
+    .total-row {
+      background-color: #fff3cd;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .total-row td {
+      border-top: 2px solid #ffc107;
+      border-bottom: none;
+    }
+    .legal {
+      margin-top: 50px;
+      font-size: 11px;
+      color: #777;
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+      text-align: justify;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <h1 class="logo">COAB</h1>
+      <div class="slogan">Inclusion - Hébergement - Solidarité</div>
+    </div>
+    <div class="doc-info">
+      <div class="doc-title">AVIS DE PAIEMENT</div>
+      <div class="ref">Dossier N° : <%= matchId %></div>
+      <div class="ref">Date d'émission : <%= date %></div>
+      <div class="ref">Période : <%= period %></div>
+    </div>
+  </div>
+
+  <div class="addresses">
+    <div class="address-block">
+      <div class="address-title">Émetteur (Le Bailleur / Sénior)</div>
+      <strong><%= seniorName %></strong><br>
+    </div>
+    <div class="address-block">
+      <div class="address-title">Destinataire (Le Locataire / Junior)</div>
+      <strong><%= juniorName %></strong><br>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Désignation</th>
+        <th class="text-right">Montant</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Loyer de base / Indemnité d'occupation</td>
+        <td class="text-right"><%= rentAmount.toFixed(2) %> €</td>
+      </tr>
+      <tr>
+        <td>Charges forfaitaires (Eau, Électricité, etc.)</td>
+        <td class="text-right"><%= chargesAmount.toFixed(2) %> €</td>
+      </tr>
+      <% if (paidServices && paidServices.length > 0) { %>
+      <tr>
+        <td>Services inclus : <%= paidServices.join(', ') %></td>
+        <td class="text-right">Inclus</td>
+      </tr>
+      <% } %>
+      <tr class="total-row">
+        <td>TOTAL À RÉGLER</td>
+        <td class="text-right"><%= totalAmount.toFixed(2) %> €</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top: 40px;">
+    <p>Bonjour <strong><%= juniorName %></strong>,</p>
+    <p>Vous êtes invité(e) à régler la somme de <strong><%= totalAmount.toFixed(2) %> €</strong> correspondant au loyer et aux charges pour la période de <strong><%= period %></strong>.</p>
+    <p>Merci de procéder au règlement avant la date d'échéance convenue dans votre contrat.</p>
+  </div>
+
+  <div class="legal">
+    Cet avis de paiement ne constitue pas une quittance de loyer. Une quittance vous sera automatiquement adressée dès la bonne réception de votre règlement.
+    Document généré automatiquement par la plateforme COAB.
+  </div>
+
+</body>
+</html>

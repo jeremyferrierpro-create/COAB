@@ -39,9 +39,12 @@ export default function AdminLayout() {
       >
         <div className="flex h-20 items-center justify-between px-6 border-b border-white/20">
           {isSidebarOpen && (
-            <span className="text-2xl font-serif font-extrabold text-coab-blue-dark truncate">
-              COAB ERP
-            </span>
+            <div className="flex items-center space-x-2">
+              <img src="/logo.jpg" alt="COAB Logo" className="h-8 w-8 rounded-full object-cover shadow-sm" />
+              <span className="text-xl font-serif font-extrabold text-coab-blue-dark truncate">
+                COAB ERP
+              </span>
+            </div>
           )}
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

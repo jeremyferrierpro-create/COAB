@@ -1,5 +1,5 @@
-import React from "react"
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"
+import { HelmetProvider } from "react-helmet-async"
 import { AuthProvider } from "./contexts/AuthContext"
 import { ProtectedRoute } from "./components/auth/ProtectedRoute"
 
@@ -7,6 +7,7 @@ import Home from "./pages/Home"
 import RegisterSenior from "./pages/RegisterSenior"
 import RegisterJunior from "./pages/RegisterJunior"
 import Login from "./pages/Login"
+import OnboardingWizard from "./components/onboarding/OnboardingWizard"
 
 import AdminLayout from "./components/layout/AdminLayout"
 import { 
@@ -18,21 +19,31 @@ import {
   AdminReports 
 } from "./pages/admin/AdminViews"
 
-// Placeholder pour les autres espaces pour démontrer le smart routing
-const SeniorDashboard = () => <div className="p-8 text-2xl font-bold">Espace Sénior (À venir)</div>;
-const JuniorDashboard = () => <div className="p-8 text-2xl font-bold">Espace Junior / HTH (À venir)</div>;
-const VolunteerDashboard = () => <div className="p-8 text-2xl font-bold">Espace Bénévole (À venir)</div>;
+import SeniorDashboard from "./pages/dashboards/SeniorDashboard"
+import JuniorDashboard from "./pages/dashboards/JuniorDashboard"
+import VolunteerDashboard from "./pages/dashboards/VolunteerDashboard"
+
+
+
+import { Toaster } from "react-hot-toast"
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <HelmetProvider>
+      <AuthProvider>
+        <Router>
+        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register/senior" element={<RegisterSenior />} />
           <Route path="/register/junior" element={<RegisterJunior />} />
           <Route path="/login" element={<Login />} />
           
+          {/* Onboarding Universel Protégé */}
+          <Route element={<ProtectedRoute allowedRoles={['SENIOR', 'JUNIOR', 'VOLUNTEER']} />}>
+            <Route path="/onboarding" element={<OnboardingWizard />} />
+          </Route>
+
           {/* Espace Admin Protégé */}
           <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
             <Route path="/admin" element={<AdminLayout />}>
@@ -65,6 +76,7 @@ function App() {
         </Routes>
       </Router>
     </AuthProvider>
+    </HelmetProvider>
   )
 }
 

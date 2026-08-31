@@ -1,0 +1,103 @@
+2026-08-30 13:37:49 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 14:46:04 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:38:47 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:38:47 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:53:10 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:53:10 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:55:22 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 15:55:22 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 16:10:21 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 16:10:21 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 16:47:00 [ERROR]: POST /api/auth/login - 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\auth.controller.ts:18:36
+
+  15 }
+  16 
+  17 // Recherche de l'utilisateur
+→ 18 const user = await prisma.user.findUnique(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 16:47:09 [ERROR]: POST /api/auth/login - 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\auth.controller.ts:18:36
+
+  15 }
+  16 
+  17 // Recherche de l'utilisateur
+→ 18 const user = await prisma.user.findUnique(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 16:49:16 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 16:51:32 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 16:51:37 [ERROR]: POST /api/auth/login - 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\auth.controller.ts:18:36
+
+  15 }
+  16 
+  17 // Recherche de l'utilisateur
+→ 18 const user = await prisma.user.findUnique(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 17:01:49 [ERROR]: POST /api/auth/login - 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\auth.controller.ts:18:36
+
+  15 }
+  16 
+  17 // Recherche de l'utilisateur
+→ 18 const user = await prisma.user.findUnique(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 17:25:33 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 19:00:20 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 19:12:59 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 19:34:02 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 19:34:02 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:07:53 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:07:53 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:09:10 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:09:10 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:15:59 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:15:59 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:35:09 [ERROR]: POST /api/auth/login - 
+Invalid `prisma.user.findUnique()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\auth.controller.ts:18:36
+
+  15 }
+  16 
+  17 // Recherche de l'utilisateur
+→ 18 const user = await prisma.user.findUnique(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 20:35:54 [ERROR]: GET /api/users - 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\user.controller.ts:66:37
+
+  63 
+  64 export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  65   try {
+→ 66     const users = await prisma.user.findMany(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 20:35:54 [ERROR]: GET /api/users - 
+Invalid `prisma.user.findMany()` invocation in
+C:\Users\Utilisateur\Desktop\COAB\server\src\controllers\user.controller.ts:66:37
+
+  63 
+  64 export const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  65   try {
+→ 66     const users = await prisma.user.findMany(
+Can't reach database server at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`
+
+Please make sure your database server is running at `ep-shy-cell-b2r1yb24-pooler.c-6.eu-central-1.aws.neon.tech:5432`.
+2026-08-30 20:43:28 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 20:43:29 [INFO]: Serveur démarré sur http://localhost:3000
+2026-08-30 21:21:27 [INFO]: Serveur démarré sur http://localhost:3000

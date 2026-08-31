@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
+import { Helmet } from "react-helmet-async"
 import { Button } from "../components/ui/Button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "../components/ui/Card"
+import { Card, CardTitle, CardDescription } from "../components/ui/Card"
 import { Home as HomeIcon, User, HeartHandshake, ShieldCheck, FileCheck, Users, ChevronDown, ChevronUp } from "lucide-react"
 import { cn } from "../lib/utils"
 
@@ -76,11 +77,14 @@ export default function Home() {
 
   return (
     <div className="h-screen w-full bg-coab-cream font-sans overflow-hidden relative flex flex-col">
+      <Helmet>
+        <title>Accueil - COAB</title>
+      </Helmet>
       
       {/* Header Fixe */}
       <nav className="absolute top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-coab-cream-light px-8 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center space-x-2">
-          <HeartHandshake className="text-coab-blue h-8 w-8" />
+          <img src="/logo.jpg" alt="COAB Logo" className="h-10 w-10 rounded-full object-cover shadow-sm" />
           <span className="text-2xl font-serif font-extrabold text-coab-black tracking-tight">COAB</span>
         </div>
         <div className="flex space-x-4">
