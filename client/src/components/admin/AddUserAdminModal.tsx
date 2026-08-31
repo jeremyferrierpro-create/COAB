@@ -46,7 +46,7 @@ export function AddUserAdminModal({ isOpen, onClose, onSuccess }: { isOpen: bool
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/users/admin', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/admin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

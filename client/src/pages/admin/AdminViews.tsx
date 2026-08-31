@@ -85,7 +85,7 @@ export function AdminCRM() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/users', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('coab_token')}`
         }
@@ -109,7 +109,7 @@ export function AdminCRM() {
     if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.")) return;
     
     try {
-      const res = await fetch(`http://localhost:3000/api/users/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('coab_token')}`
@@ -257,7 +257,7 @@ export function AdminOperations() {
   useEffect(() => {
     const fetchSeniors = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/users', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('coab_token')}` }
         });
         if (res.ok) {
@@ -286,7 +286,7 @@ export function AdminOperations() {
         const senior = seniors.find(s => s.id === selectedSeniorId);
         if (!senior || !senior.seniorProfile) return;
         
-        const res = await fetch(`http://localhost:3000/api/matching/senior/${senior.seniorProfile.id}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/matching/senior/${senior.seniorProfile.id}`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('coab_token')}` }
         });
         if (res.ok) {
@@ -317,7 +317,7 @@ export function AdminOperations() {
         score
       };
 
-      const res = await fetch('http://localhost:3000/api/matching/create', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/matching/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -435,7 +435,7 @@ export function AdminLegal() {
 
   const fetchMatches = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/legal/matches', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/matches`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('coab_token')}` }
       });
       if (res.ok) {
@@ -479,23 +479,23 @@ export function AdminLegal() {
   };
 
   const handleGenerateContract = (matchId: string) => {
-    downloadDocument(`http://localhost:3000/api/legal/contract/${matchId}`, `Contrat_ELAN_${matchId}.pdf`);
+    downloadDocument(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/contract/${matchId}`, `Contrat_ELAN_${matchId}.pdf`);
   };
 
   const handleGenerateCharter = (matchId: string) => {
-    downloadDocument(`http://localhost:3000/api/legal/charter/${matchId}`, `Charte_Cohabilis_${matchId}.pdf`);
+    downloadDocument(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/charter/${matchId}`, `Charte_Cohabilis_${matchId}.pdf`);
   };
 
   const handleGenerateReceipt = (matchId: string) => {
     const period = prompt('Période (ex: Septembre 2026) :', 'Septembre 2026');
     if (!period) return;
-    downloadDocument(`http://localhost:3000/api/legal/receipt/${matchId}`, `Quittance_${period}.pdf`, 'POST', { period });
+    downloadDocument(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/receipt/${matchId}`, `Quittance_${period}.pdf`, 'POST', { period });
   };
 
   const handleGenerateNotice = (matchId: string) => {
     const period = prompt('Période concernée (ex: Septembre 2026) :', 'Septembre 2026');
     if (!period) return;
-    downloadDocument(`http://localhost:3000/api/legal/payment-notice/${matchId}`, `Avis_Paiement_${period}.pdf`, 'POST', { period });
+    downloadDocument(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/payment-notice/${matchId}`, `Avis_Paiement_${period}.pdf`, 'POST', { period });
   };
 
   return (

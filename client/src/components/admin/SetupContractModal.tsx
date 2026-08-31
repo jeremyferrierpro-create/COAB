@@ -36,7 +36,7 @@ export function SetupContractModal({ match, isOpen, onClose, onSaved }: SetupCon
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('coab_token');
-      const response = await fetch(`http://localhost:3000/api/legal/setup-contract/${match.id}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/legal/setup-contract/${match.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

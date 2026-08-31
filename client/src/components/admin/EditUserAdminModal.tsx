@@ -36,7 +36,7 @@ export function EditUserAdminModal({ isOpen, onClose, userId, onSuccess }: { isO
       const fetchUser = async () => {
         setFetching(true);
         try {
-          const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${userId}`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('coab_token')}`
             }
@@ -93,7 +93,7 @@ export function EditUserAdminModal({ isOpen, onClose, userId, onSuccess }: { isO
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/users/${userId}/admin`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${userId}/admin`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -28,7 +28,7 @@ export function SignaturePad({ onSignatureSaved, onCancel }: SignaturePadProps) 
     try {
       const token = localStorage.getItem('coab_token');
       // On sauvegarde la signature dans le profil de l'utilisateur connecté
-      const response = await fetch('http://localhost:3000/api/users/signature', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/signature`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

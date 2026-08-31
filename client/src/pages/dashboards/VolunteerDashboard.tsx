@@ -12,7 +12,7 @@ export default function VolunteerDashboard() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/users/me', {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -102,7 +102,7 @@ export default function VolunteerDashboard() {
             onClick={async () => {
               if (!window.confirm("Êtes-vous sûr de vouloir supprimer définitivement votre compte ? (Droit à l'oubli)")) return;
               try {
-                const res = await fetch(`http://localhost:3000/api/users/${user?.id}`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${user?.id}`, {
                   method: 'DELETE',
                   headers: { 'Authorization': `Bearer ${token}` }
                 });

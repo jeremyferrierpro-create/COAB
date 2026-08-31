@@ -10,7 +10,7 @@ export function ViewUserAdminModal({ isOpen, onClose, userId }: { isOpen: boolea
       const fetchUser = async () => {
         setFetching(true);
         try {
-          const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
+          const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${userId}`, {
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('coab_token')}`
             }
