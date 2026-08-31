@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../contexts/AuthContext';
 import EditProfileModal from '../../components/profile/EditProfileModal';
 import { SignaturePad } from '../../components/profile/SignaturePad';
+import DocumentUploader from '../../components/documents/DocumentUploader';
 
 export default function JuniorDashboard() {
   const { user, token } = useAuth();
@@ -10,6 +11,7 @@ export default function JuniorDashboard() {
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [documents, setDocuments] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -19,6 +21,15 @@ export default function JuniorDashboard() {
         });
         const data = await res.json();
         setProfileData(data);
+
+        // Fetch documents
+        const docRes = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/documents/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (docRes.ok) {
+          const docsData = await docRes.json();
+          setDocuments(docsData);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -104,25 +115,23 @@ export default function JuniorDashboard() {
             )}
           </div>
 
-          {/* Card 3: Documents */}
           <div className="md:col-span-3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-coab-blue-dark">Mes Documents</h2>
-              <button className="px-4 py-2 bg-coab-orange text-white rounded-xl text-sm font-bold hover:bg-coab-orange-dark transition-colors">
-                + Ajouter
-              </button>
-            </div>
+            <h2 className="text-xl font-bold text-coab-blue-dark mb-6">Mes Documents Administratifs</h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Fake Document Items for visual layout */}
-              <div className="p-4 border rounded-xl flex items-center justify-between">
-                <span className="text-sm font-medium">Carte Étudiant / Contrat</span>
-                <span className="text-green-500 font-bold">✓</span>
-              </div>
-              <div className="p-4 border rounded-xl flex items-center justify-between">
-                <span className="text-sm font-medium">Attestation RC</span>
-                <span className="text-coab-gray-light">En attente</span>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <DocumentUploader 
+                docType="ID_PROOF"
+                label="Pièce d'identité (Recto/Verso)"
+                existingDocument={documents.find(d => d.docType === 'ID_PROOF')}
+                onUploadSuccess={(doc) => setDocuments(prev => [...prev.filter(d => d.docType !== 'ID_PROOF'), doc])}
+              />
+              
+              <DocumentUploader 
+                docType="STATUS_PROOF"
+                label={profileData?.hthProfile ? 'Attestation Service Civique' : 'Certificat de scolarité / Contrat de travail'}
+                existingDocument={documents.find(d => d.docType === 'STATUS_PROOF')}
+                onUploadSuccess={(doc) => setDocuments(prev => [...prev.filter(d => d.docType !== 'STATUS_PROOF'), doc])}
+              />
             </div>
           </div>
           

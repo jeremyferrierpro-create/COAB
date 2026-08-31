@@ -700,15 +700,42 @@ export function AdminLegal() {
 }
 
 export function AdminFinances() {
-  const transactions = [
-    { id: 'TRX-001', date: '28/08/2026', desc: 'Subvention Région Occitanie', type: 'Revenu', amount: '+ 5 000 €', status: 'Complété' },
-    { id: 'TRX-002', date: '25/08/2026', desc: 'Loyer - Dossier #1234', type: 'Revenu', amount: '+ 150 €', status: 'Complété' },
-    { id: 'TRX-003', date: '20/08/2026', desc: 'Frais Serveur & Outils', type: 'Dépense', amount: '- 80 €', status: 'Complété' }
-  ];
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const token = localStorage.getItem('coab_token');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/payments/transactions`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          setTransactions(await res.json());
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
 
   const handleExport = () => {
     // Mock export CSV
     toast.success("Le fichier 'export_comptable_2026.csv' a été téléchargé.");
+  };
+
+  const calculateTotal = () => {
+    return transactions.reduce((acc, t) => acc + t.amount, 0);
+  };
+
+  const calculateMonthly = () => {
+    const thisMonth = new Date().getMonth();
+    return transactions
+      .filter(t => new Date(t.paidAt || t.createdAt).getMonth() === thisMonth)
+      .reduce((acc, t) => acc + t.amount, 0);
   };
 
   return (
@@ -728,7 +755,7 @@ export function AdminFinances() {
           <CardContent className="flex justify-between items-end">
             <div>
               <p className="text-coab-gray text-sm font-bold uppercase">Solde Actuel</p>
-              <p className="text-4xl font-extrabold text-coab-black">14 500 €</p>
+              <p className="text-4xl font-extrabold text-coab-black">{calculateTotal()} €</p>
             </div>
             <div className="space-x-2">
               <button className="px-3 py-1 bg-coab-green/10 text-coab-green border border-coab-green rounded font-bold text-xs">+ Entrée</button>
@@ -743,7 +770,7 @@ export function AdminFinances() {
           </CardHeader>
           <CardContent>
             <p className="text-coab-gray text-sm font-bold uppercase">Ce mois-ci</p>
-            <p className="text-4xl font-extrabold text-coab-orange">1 250 €</p>
+            <p className="text-4xl font-extrabold text-coab-orange">{calculateMonthly()} €</p>
           </CardContent>
         </Card>
       </div>
@@ -764,12 +791,22 @@ export function AdminFinances() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {transactions.map(t => (
+              {loading ? (
+                <tr>
+                  <td colSpan={5} className="py-4 text-center text-gray-500">Chargement...</td>
+                </tr>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-4 text-center text-gray-500">Aucune transaction trouvée.</td>
+                </tr>
+              ) : transactions.map(t => (
                 <tr key={t.id} className="hover:bg-white/50 transition-colors">
-                  <td className="py-4 font-mono text-xs text-gray-500">{t.date}</td>
-                  <td className="py-4 font-bold text-coab-black">{t.desc}</td>
+                  <td className="py-4 font-mono text-xs text-gray-500">{new Date(t.paidAt || t.createdAt).toLocaleDateString('fr-FR')}</td>
+                  <td className="py-4 font-bold text-coab-black">{t.user ? `${t.user.firstName} ${t.user.lastName}` : 'Anonyme'}</td>
                   <td className="py-4 text-sm">{t.type}</td>
-                  <td className={`py-4 font-extrabold ${t.amount.includes('+') ? 'text-coab-green' : 'text-coab-red'}`}>{t.amount}</td>
+                  <td className={`py-4 font-extrabold ${t.amount >= 0 ? 'text-coab-green' : 'text-coab-red'}`}>
+                    {t.amount > 0 ? '+' : ''}{t.amount} €
+                  </td>
                   <td className="py-4 text-right"><span className="text-xs bg-gray-100 px-2 py-1 rounded font-bold">{t.status}</span></td>
                 </tr>
               ))}
@@ -782,6 +819,29 @@ export function AdminFinances() {
 }
 
 export function AdminReports() {
+  const [reports, setReports] = useState([]);
+  const [loadingReports, setLoadingReports] = useState(true);
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const token = localStorage.getItem('coab_token');
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/volunteers/reports`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setReports(data);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoadingReports(false);
+      }
+    };
+    fetchReports();
+  }, []);
+
   const dataFormules = [
     { name: 'Solidaire', value: 70 },
     { name: 'Conviviale', value: 20 },
@@ -817,6 +877,64 @@ export function AdminReports() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="bg-white/80 backdrop-blur-md shadow-sm mt-8">
+        <CardHeader>
+          <CardTitle className="text-lg">Rapports de Suivi (Bénévoles)</CardTitle>
+          <CardDescription>Consultez les derniers rapports mensuels remplis par les bénévoles.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingReports ? (
+            <div className="text-center py-4 text-coab-gray">Chargement des rapports...</div>
+          ) : reports.length === 0 ? (
+            <div className="text-center py-4 text-coab-gray bg-gray-50 rounded-xl">Aucun rapport rempli pour le moment.</div>
+          ) : (
+            <div className="space-y-4">
+              {reports.map((report: any) => (
+                <div key={report.id} className="p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-bold text-coab-black text-sm">
+                        Binôme : {report.match?.senior?.user?.firstName} & {report.match?.junior?.user?.firstName}
+                      </h3>
+                      <p className="text-xs text-coab-gray mt-1">
+                        Suivi par : {report.volunteer?.firstName} {report.volunteer?.lastName}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="inline-block px-2 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800">
+                        Date: {new Date(report.interviewDate).toLocaleDateString('fr-FR')}
+                      </span>
+                      {report.qualityRating && (
+                        <div className="mt-1 flex items-center justify-end text-xs font-bold">
+                          Note : {report.qualityRating}/5
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 bg-white p-3 rounded-lg border border-gray-100 text-sm">
+                    <div>
+                      <span className="font-bold text-coab-blue-dark block mb-1">Retour Sénior :</span>
+                      <p className="text-gray-600 line-clamp-2">{report.seniorFeedback || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <span className="font-bold text-coab-blue-dark block mb-1">Retour Junior :</span>
+                      <p className="text-gray-600 line-clamp-2">{report.juniorFeedback || 'N/A'}</p>
+                    </div>
+                  </div>
+                  
+                  {report.incidentsReported && (
+                    <div className="mt-3 p-2 bg-red-50 text-red-700 border border-red-200 rounded-lg text-xs font-bold flex items-center">
+                      <span className="mr-2">⚠️</span> Incident signalé : {report.incidentDetails}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

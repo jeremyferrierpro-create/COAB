@@ -132,6 +132,13 @@ model MonthlyFollowup {
   seniorFeedback     String?  @map("senior_feedback")
   juniorFeedback     String?  @map("junior_feedback")
   generalNotes       String?  @map("general_notes")
+  
+  // Nouveaux champs pour le suivi détaillé (Statistiques)
+  qualityRating      Int?     @map("quality_rating") // Note de 1 à 5
+  incidentsReported  Boolean  @default(false) @map("incidents_reported")
+  incidentDetails    String?  @map("incident_details")
+  nextActionSteps    String?  @map("next_action_steps")
+  
   sentToStakeholders Boolean  @default(false) @map("sent_to_stakeholders")
   match              Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
   volunteer          User     @relation("VolunteerFollowups", fields: [volunteerId], references: [id])
@@ -143,6 +150,7 @@ model Document {
   matchId           String?      @map("match_id")
   docType           DocumentType @map("doc_type")
   fileUrl           String       @map("file_url")
+  fileData          String?      @map("file_data") // Pour stocker en Base64 dans Neon
   signedAt          DateTime?    @map("signed_at")
   signatureMetadata Json?        @map("signature_metadata")
   match             Match?       @relation(fields: [matchId], references: [id])

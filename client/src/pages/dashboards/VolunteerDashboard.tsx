@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../contexts/AuthContext';
 import EditProfileModal from '../../components/profile/EditProfileModal';
+import VolunteerReportModal from '../../components/volunteer/VolunteerReportModal';
 
 export default function VolunteerDashboard() {
   const { user, token } = useAuth();
   const [profileData, setProfileData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedFollowup, setSelectedFollowup] = useState<any>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -85,9 +87,16 @@ export default function VolunteerDashboard() {
                         <span className="inline-block px-2 py-1 mt-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-full">
                           Date du RDV : {new Date(followup.interviewDate).toLocaleDateString('fr-FR')}
                         </span>
+                        {followup.qualityRating && (
+                          <span className="inline-block px-2 py-1 mt-1 ml-2 text-xs font-semibold bg-green-100 text-green-700 rounded-full">
+                            Rapport complété
+                          </span>
+                        )}
                       </div>
-                      <button className="px-3 py-1 bg-white border border-coab-blue/30 rounded-lg text-sm font-medium hover:bg-coab-blue/10">
-                        Rédiger le rapport
+                      <button 
+                        onClick={() => setSelectedFollowup(followup)}
+                        className="px-3 py-1 bg-white border border-coab-blue/30 rounded-lg text-sm font-medium hover:bg-coab-blue/10">
+                        {followup.qualityRating ? 'Modifier le rapport' : 'Rédiger le rapport'}
                       </button>
                     </div>
                   </div>
@@ -122,6 +131,21 @@ export default function VolunteerDashboard() {
           profileData={profileData} 
           onClose={() => setIsEditModalOpen(false)}
           onSuccess={(updatedData) => setProfileData({ ...profileData, ...updatedData })}
+        />
+      )}
+
+      {selectedFollowup && (
+        <VolunteerReportModal 
+          followup={selectedFollowup}
+          onClose={() => setSelectedFollowup(null)}
+          onSuccess={(updatedFollowup) => {
+            // Mettre à jour l'état local avec le rapport sauvegardé
+            const updatedFollowups = profileData.volunteerMatches.map((f: any) => 
+              f.id === updatedFollowup.id ? updatedFollowup : f
+            );
+            setProfileData({ ...profileData, volunteerMatches: updatedFollowups });
+            setSelectedFollowup(null);
+          }}
         />
       )}
     </div>

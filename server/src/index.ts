@@ -8,6 +8,9 @@ import authRoutes from './routes/auth.routes';
 import matchingRoutes from './routes/matching.routes';
 import legalRoutes from './routes/legal.routes';
 import userRoutes from './routes/user.routes';
+import volunteerRoutes from './routes/volunteer.routes';
+import documentRoutes from './routes/document.routes';
+import paymentRoutes from './routes/payment.routes';
 
 dotenv.config();
 
@@ -33,13 +36,19 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 })); 
-app.use(express.json());
+
+// Augmentation de la limite pour permettre l'upload de fichiers en Base64
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ limit: '20mb', extended: true }));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/matching', matchingRoutes);
 app.use('/api/legal', legalRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/volunteers', volunteerRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/payments', paymentRoutes);
 
 // Route par défaut
 app.get('/', (req, res) => {

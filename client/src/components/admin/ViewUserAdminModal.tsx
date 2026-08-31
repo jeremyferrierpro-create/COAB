@@ -135,6 +135,57 @@ export function ViewUserAdminModal({ isOpen, onClose, userId }: { isOpen: boolea
               </div>
             )}
 
+            {/* Documents & Validation */}
+            <div className="space-y-4">
+              <h4 className="font-bold text-coab-blue border-b pb-2">Documents & Validation</h4>
+              
+              <div className="bg-gray-50 p-4 rounded-xl space-y-4">
+                {user.documents && user.documents.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {user.documents.map((doc: any) => (
+                      <div key={doc.id} className="flex justify-between items-center p-3 bg-white border border-gray-200 rounded-lg">
+                        <span className="text-sm font-semibold text-gray-700">{doc.docType}</span>
+                        <a 
+                          href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}${doc.fileUrl}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-xs px-2 py-1 bg-coab-blue/10 text-coab-blue rounded hover:bg-coab-blue/20"
+                        >
+                          Voir
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Aucun document transmis.</p>
+                )}
+
+                <div className="pt-4 border-t border-gray-200 flex justify-end">
+                  <button 
+                    onClick={async () => {
+                      if (!window.confirm("Valider ce dossier comme 'Complet' ?")) return;
+                      try {
+                        const token = localStorage.getItem('coab_token');
+                        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/users/${user.id}/validate`, {
+                          method: 'POST',
+                          headers: { Authorization: `Bearer ${token}` }
+                        });
+                        if (res.ok) {
+                          alert("Le dossier a été validé avec succès.");
+                          // Update local state to reflect changes if needed
+                        }
+                      } catch (e) {
+                        console.error(e);
+                      }
+                    }}
+                    className="px-4 py-2 bg-coab-green text-white text-sm font-bold rounded-xl hover:bg-coab-green-dark transition-colors"
+                  >
+                    Valider le dossier (Complet)
+                  </button>
+                </div>
+              </div>
+            </div>
+
           </div>
         ) : (
           <div className="p-10 text-center text-gray-500">Erreur de chargement.</div>

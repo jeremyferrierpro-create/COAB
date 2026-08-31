@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { HousingFormula, MatchStatus } from '@prisma/client';
+import { emailService } from '../lib/email.service';
 
 export const getMatchesForSenior = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -176,8 +177,8 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    const senior = await prisma.seniorProfile.findUnique({ where: { id: seniorId } });
-    const junior = await prisma.juniorProfile.findUnique({ where: { id: juniorId } });
+    const senior = await prisma.seniorProfile.findUnique({ where: { id: seniorId }, include: { user: true } });
+    const junior = await prisma.juniorProfile.findUnique({ where: { id: juniorId }, include: { user: true } });
 
     if (!senior || !junior) {
       res.status(404).json({ error: 'Profil Sénior ou Junior introuvable' });
@@ -193,6 +194,35 @@ export const createMatch = async (req: Request, res: Response): Promise<void> =>
         status: MatchStatus.SUGGESTED
       }
     });
+
+    // Envoi d'email de notification aux deux parties
+    if (senior.user?.email) {
+      await emailService.sendEmail({
+        to: senior.user.email,
+        subject: 'Nouveau profil proposé pour votre hébergement ! 🎉',
+        html: `
+          <h2>Bonjour ${senior.user.firstName},</h2>
+          <p>Nous avons trouvé un profil Junior qui correspond très bien à vos attentes (Score d'affinité: ${score}%).</p>
+          <p>Connectez-vous sur votre espace COAB pour découvrir son profil et organiser une première rencontre !</p>
+          <br>
+          <p>L'équipe COAB</p>
+        `
+      });
+    }
+
+    if (junior.user?.email) {
+      await emailService.sendEmail({
+        to: junior.user.email,
+        subject: 'Une proposition d\'hébergement vous attend ! 🎉',
+        html: `
+          <h2>Bonjour ${junior.user.firstName},</h2>
+          <p>Un hébergeur correspondant à vos critères a été trouvé ! (Score d'affinité: ${score}%).</p>
+          <p>Connectez-vous sur votre espace COAB pour en savoir plus.</p>
+          <br>
+          <p>L'équipe COAB</p>
+        `
+      });
+    }
 
     res.status(201).json(newMatch);
   } catch (error) {

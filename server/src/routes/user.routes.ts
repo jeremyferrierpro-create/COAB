@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllUsers, getUserById, updateUser, deleteUser, updateOnboarding, getMe, updateMe, createUserAdmin, updateUserAdmin, saveSignature } from '../controllers/user.controller';
+import { getAllUsers, getUserById, updateUser, deleteUser, updateOnboarding, getMe, updateMe, createUserAdmin, updateUserAdmin, saveSignature, validateProfile } from '../controllers/user.controller';
 import { authenticateToken, requireRole } from '../middleware/auth.middleware';
 
 const router = Router();
@@ -19,5 +19,8 @@ router.delete('/:id', authenticateToken, deleteUser);
 
 // Onboarding utilisateur
 router.post('/:id/onboarding', authenticateToken, updateOnboarding);
+
+// Valider le dossier d'un utilisateur (Admin)
+router.post('/:id/validate', authenticateToken, requireRole(['ADMIN']), validateProfile);
 
 export default router;
